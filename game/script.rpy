@@ -145,10 +145,211 @@ menu:
 label minigame2:
     scene restaurantkitchengame
 
-    "Minigame 2: dieieieidiei"
-    #code the minigame here ok
+    init python:
+        def slider_update(st):
+            global slider_speed
 
-    jump scene2close
+            if stop_slider:
+                return None
+
+            max_x = slider_bar_size[0] - slider_size[0]
+            for sprite in slider_sprites:
+                if sprite.type != "slider":
+                    continue
+
+                movement = slider_speed * chest_difficulty
+                if sprite.direction == "right":
+                    sprite.x = min(sprite.x + movement, max_x)
+                    if sprite.x >= max_x:
+                        sprite.direction = "left"
+                        slider_speed = 2
+                    else:
+                        slider_speed += 0.04
+                else:
+                    sprite.x = max(sprite.x - movement, 0)
+                    if sprite.x <= 0:
+                        sprite.direction = "right"
+                        slider_speed = 2
+                    else:
+                        slider_speed += 0.04
+
+            return 0
+
+        def check_slider_safe_zone():
+            global chest_unlocked
+            global chest_unlock_tries
+            global stop_slider
+
+            slider = next(sprite for sprite in slider_sprites if sprite.type == "slider")
+            safe_zone = next(sprite for sprite in slider_sprites if sprite.type == "safe-zone")
+
+            overlaps_safe_zone = (
+                slider.x + slider_size[0] > safe_zone.x
+                and slider.x < safe_zone.x + safe_zone_size[0]
+            )
+            if overlaps_safe_zone:
+                chest_unlocked = True
+                stop_slider = True
+                renpy.play("winning.mp3", "sound")
+            else:
+                chest_unlock_tries -= 1
+                renpy.play("losing.mp3", "sound")
+                if chest_unlock_tries <= 0:
+                    renpy.show_screen("game_over")
+                    stop_slider = True
+
+        def reset_chest_puzzle():
+            global chest_unlocked
+            global chest_unlock_tries
+            global stop_slider
+            global slider_speed
+
+            chest_unlocked = False
+            chest_unlock_tries = 3
+            stop_slider = False
+            slider_speed = 2
+
+            #this includes randomising the location of safe zone each time
+            for sprite in slider_sprites:
+                if sprite.type == "slider":
+                    sprite.x = 0
+                    sprite.direction = "right"
+                elif sprite.type == "safe-zone":
+                    sprite.x = renpy.random.randint(
+                        0, slider_bar_size[0] - safe_zone_size[0]
+                    )
+
+            slider_SM.redraw(0)
+            renpy.restart_interaction()
+
+
+    transform half_size:
+        zoom 0.5
+
+    transform chest_transform:
+        zoom 0.5
+        anchor (0.5, 0.5)
+        align (0.5, 0.7)
+        subpixel True
+        on hover:
+            easein 1.0 zoom 0.51
+        on idle:
+            easein 1.0 zoom 0.5
+
+    transform chest_closed:
+        zoom 0.5
+        align (0.5, 0.7)
+
+    transform chest_unlocked_anim:
+        zoom 0.5
+        alpha 0.0
+        align (0.5, 0.7)
+        parallel: 
+            easein 3.0 zoom 0.7
+        parallel:
+            easein 2.0 alpha 1.0
+
+    screen game_over():
+        modal True
+        key "K_SPACE" action [Hide("game_over"), Function(reset_chest_puzzle)]
+        frame:
+            background "#00000080"
+            xfill True
+            yfill True
+            frame:
+                background "#FFFFFFE6"
+                xfill True
+                padding (15, 0)
+                align (0.5, 0.5)
+                text "Out of tries — press Space to try again" color "#000000" size 30 xalign 0.5
+
+    screen chest_puzzle():
+        on "show" action Function(reset_chest_puzzle)
+        key "K_SPACE" action If(
+            chest_unlocked,
+            true=Return(),
+            false=Function(check_slider_safe_zone)
+        )
+        key "mousedown_1" action If(
+            chest_unlocked,
+            true=Return(),
+            false=Function(check_slider_safe_zone)
+        )
+        add "restaurantkitchen.jpg" at half_size
+        if not chest_unlocked:
+            frame:
+                background "#FFFFFF"
+                padding (5, 5)
+                align (0.5, 0.3)
+                text "[chest_unlock_tries] tries" size 18 color "#000000" xalign 0.5
+            frame:
+                background None
+                align (0.5, 0.4)
+                xysize slider_bar_size
+                add slider_SM
+        add "slider-bar.png" at half_size
+        if chest_unlocked:
+            add "chest-opened.png" at chest_unlocked_anim
+        else:
+            add "chest-closed-idle.png" at chest_closed
+
+    screen scene_1():
+        add "restaurantkitchen.jpg" at half_size
+        imagebutton:
+            auto "chest-closed-%s.png"
+            action Return()
+            at chest_transform
+
+    screen scene_2():
+        add "restaurantkitchen.jpg" at half_size
+        imagebutton:
+            auto "chest-closed-%s.png"
+            action Return()
+            at chest_transform
+
+    screen scene_3():
+        add "restaurantkitchen.jpg" at half_size
+        imagebutton:
+            auto "chest-closed-%s.png"
+            action Return()
+            at chest_transform
+
+    label start:
+        $ slider_SM = SpriteManager(update=slider_update)
+        $ slider_sprites = []
+
+        $ safe_zone_image = Image("safe-zone.png")
+        $ safe_zone_transform = Transform(child=safe_zone_image, zoom=0.5)
+        $ safe_zone_size = (int(149 / 2), int(70 / 2))
+        $ slider_sprites.append(slider_SM.create(safe_zone_transform))
+        $ slider_sprites[-1].type = "safe-zone"
+
+        $ slider_bar_size = (int(545 / 2), int(70 / 2))
+        $ slider_image = Image("slider.png")
+        $ slider_transform = Transform(child=slider_image, zoom=0.5)
+        $ slider_sprites.append(slider_SM.create(slider_transform))
+        $ slider_sprites[-1].type = "slider"
+        $ slider_sprites[-1].direction = "right"
+        $ slider_size = (int(48 / 2), int(66 / 2))
+        $ slider_speed = 2
+        $ stop_slider = False
+        $ chest_unlocked = False
+        $ chest_unlock_tries = 3
+
+        $ chest_difficulty = 1
+        call screen scene_1
+        call screen chest_puzzle
+
+        $ chest_difficulty = 2
+        call screen scene_2
+        call screen chest_puzzle
+
+        $ chest_difficulty = 3
+        call screen scene_3
+        call screen chest_puzzle
+
+        "You mixed all the batter!"
+        call scene2close
 
 label scene2close:
     scene restaurant kitchen

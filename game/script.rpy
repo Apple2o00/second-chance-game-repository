@@ -3,8 +3,7 @@
 # Declare characters used by this game. The color argument colorizes the
 # name of the character.
 
-define p = Character("Pierre")
-define e = Character("Emilie")
+define protagonist = Character("[player_name]")
 
 
 # The game starts here.
@@ -17,40 +16,77 @@ label start:
     # images directory to show it.
     scene blank
     "Choose Your Character"
-    menu: 
+
+    menu:
         "Pierre (Male)":
-            jump pierrescreen
-        "Emilie (Female)"
-            jump emiliescreen
+            $ player_variant = "pierre"
+            $ player_name = "Pierre"
+            $ subject_pronoun = "he"
+            $ object_pronoun = "him"
+            $ possessive_pronoun = "his"
+            jump player_selected
 
+        "Emilie (Female)":
+            $ player_variant = "emilie"
+            $ player_name = "Emilie"
+            $ subject_pronoun = "she"
+            $ object_pronoun = "her"
+            $ possessive_pronoun = "her"
+            jump player_selected
 
- pierrescreen
+label player_selected:
     scene bg room
 
-    # This shows a character sprite. A placeholder is used, but you can
-    # replace it by adding a file named "chudhappy.png" to the images
-    # directory.
+    if player_variant == "pierre":
+        show p happy
+    else:
+        show e happy
 
-    show p happy
-
-    # These display lines of dialogue.
-
-    p "bonjour, i am chud."
-
-    p "i am so cool and quite maxing, chud maxing that is"
+    protagonist "Bonjour, I am [player_name]."
+    protagonist "I am so cool, and everyone likes me."
+    protagonist "That's my story."
 
     jump openingscene
 
-emiliescreen
-    scene bg room
+label openingscene:
+    scene blank
+    "[player_name] has been rejected from culinary school"
+    "help [object_pronoun] get back on [possessive_pronoun] feet and become a master chef!"
+    
+    jump scene1
 
-    show e happy
+label scene1:
+    scene home kitchen
 
-    e "bonjour, i am emilie"
+    "[player_name] is in [possessive_pronoun] home kitchen"
 
-    e "i am so cool and quite maxing, chud maxing that is"
+    if player_variant == "pierre":
+        show p happy
+    else:
+        show e happy
 
-    jump openingscene
+    protagonist "I need to find a way to prove myself and become a great chef!"
+    "to do that, [player_name] must complete a series of mini-games to cook different dishes."
 
-openingscene
-    "chud has been rejected from culinary school"
+    jump minigame1
+
+label minigame1:
+    scene homekitchengame
+
+    "Minigame 1: cididiid"
+    #code the minigame here ok
+
+    jump scene1close
+
+label scene1close:
+    scene home kitchen
+    # add the cute ending scene here
+
+    jump firstmiddle
+
+label firstmiddle:
+    scene blank
+    "After completing the first mini-game, [player_name] feels more confident in [possessive_pronoun] cooking skills."
+    "However, the journey to becoming a master chef is just beginning."
+
+    jump scene2

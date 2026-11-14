@@ -4,8 +4,14 @@
 # name of the character.
 
 define protagonist = Character("[player_name]")
-
-
+define c = Character("Chicken")
+define w = Character("Waffle")
+define m = Character("macron")
+define bc = Character("blue cheese")
+define j = Character("jelly")
+define wa = Character("Wasabi")
+define pr = Character("Pop Rocks")
+define hh = Character("Hordon Hamsey")
 # The game starts here.
 
 label start:
@@ -43,30 +49,29 @@ label player_selected:
         show e happy
 
     protagonist "Bonjour, I am [player_name]."
-    protagonist "I am so cool, and everyone likes me."
-    protagonist "That's my story."
+    protagonist "I got rejected from my dream culinary school, but I will show everyone I won't give up!"
+    protagonist "That's my story"
 
     jump openingscene
 
 label openingscene:
     scene blank
-    "[player_name] has been rejected from culinary school"
-    "help [object_pronoun] get back on [possessive_pronoun] feet and become a master chef!"
+    "Oh no! [player_name]'s dreams of being a professional chef are ruined. His skills aren't good enough so no one wants to try his weird food combos But wait! [player_name] is determined to bounce back, and [subject_pronoun]'ll bounce back in no time!"
+    "help train [object_pronoun]!"
     
     jump scene1
 
 label scene1:
     scene home kitchen
 
-    "[player_name] is in [possessive_pronoun] home kitchen"
+    "[player_name] is in [possessive_pronoun] kitchen, whipping up some new combos to get better cooking skills!"
 
     if player_variant == "pierre":
         show p happy
     else:
         show e happy
 
-    protagonist "I need to find a way to prove myself and become a great chef!"
-    "to do that, [player_name] must complete a series of mini-games to cook different dishes."
+    protagonist "I am great at thinking up food combos, but I need your help to make them taste good! This combo is a but tricky..."
 
     jump minigame1
 
@@ -75,7 +80,24 @@ label minigame1:
 
     "Minigame 1: cididiid"
     #code the minigame here ok
+    show c mad
+    c "Don't even try to pair me up with that waffle, he's way too sweet for me!"
+    hide c mad 
+    show w happy
+    w "I want to talk to chicken, but she doesn't like sweet guys like me... heh"
+    hide w happy 
+    "Task: Roll the chicken onto the waffle!"
 
+if player_variant == "pierre":
+        show p happy
+    else:
+        show e happy
+    protagonist "Use the spacebar to push the chicken onto the waffle, the faster you click the better!"
+    
+    if player_variant == "pierre":
+        hide p happy
+    else:
+        hide e happy
     jump scene1close
 
 label scene1close:
@@ -90,3 +112,103 @@ label firstmiddle:
     "However, the journey to becoming a master chef is just beginning."
 
     jump scene2
+
+label scene2:
+    scene restaurant kitchen
+
+    "[player_name] is in [possessive_pronoun] restaurant kitchen"
+
+    if player_variant == "pierre":
+        show p happy
+    else:
+        show e happy
+
+    protagonist "I'm so glad I got a job at a real restaurant kitchen!"
+    "Now, the stakes are higher. Can you help [player_name] prove [object_pronoun]self to the head chef?"
+
+    jump minigame2
+
+label minigame2:
+    scene restaurantkitchengame
+
+    "Minigame 2: dieieieidiei"
+    #code the minigame here ok
+
+    jump scene2close
+
+label scene2close:
+    scene restaurant kitchen
+    # add the cute ending scene here
+
+    jump secondmiddle
+
+label secondmiddle:
+    scene blank
+    "congratulations! [player_name] has been doing a stunning job at their new restaurant."
+    "So stunning, you even got a strange letter on your desk..."
+
+    jump desk
+
+label desk:
+    scene desklayout
+    "You pick up the mysterious letter and open it..."
+    # code the letter opening animation - maybe add the image
+    #add the letter content here, add the real picture of gordon ramsay
+    #make the image remove
+    "Congratulations! [player_name] too, but let's be real you did all the work on this one. Maybe you should come too!]"
+
+    jump scene3
+
+label scene3:
+    scene professional kitchen
+    "After receiving the letter, [player_name] is invited to a prestigious cooking competition."
+    "This is the ultimate test of [possessive_pronoun] skills. Can you help [player_name] win the competition and become a master chef?"
+    #also introduce gordon ramsay
+
+    if player_variant == "pierre":
+        show p happy
+    else:
+        show e happy
+
+    protagonist "I can't believe it! Gordon Ramsay himself is inviting me to compete in his cooking competition!"
+    jump minigame3
+
+label minigame3:
+    scene professionalkitchengame
+
+    "Minigame 3: iiiiiiii"
+    #code the minigame here ok
+
+    jump scene3close
+
+label scene3close:
+    scene professional kitchen
+    # add the cute ending scene here
+
+    jump thirdmiddle
+
+label thirdmiddle:
+    scene professional kitchen judge panel
+    "After completing the final mini-game, [player_name] has proven [object_pronoun]self to be a master chef."
+    "Gordon Ramsay himself is impressed with [possessive_pronoun] skills and offers [object_pronoun] a job at his restaurant, as well as a little bonus!"
+    #code the image of ramsay handing the player a check and a toque
+
+    jump ending
+
+label ending:
+    "Congratulations! [player_name] has achieved [possessive_pronoun] dream of becoming a great chef."
+    "But where does that leave you?"
+    #fade the images in and out of stock freedom
+    "maybe it's time for you to head to the kitchen..."
+
+    #fade the images in and out of the ingredients falling in love in polaroid flashbacks
+    #try to get a dissolving effect in here
+    jump reallydonenow
+
+label reallydonenow:
+    scene endingcolour
+    "thank you for playing second chance!"
+    #yap abt the game
+
+
+

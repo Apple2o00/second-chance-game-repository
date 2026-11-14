@@ -56,7 +56,7 @@ label player_selected:
 
 label openingscene:
     scene blank
-    "Oh no! [player_name]'s dreams of being a professional chef are ruined. His skills aren't good enough so no one wants to try his weird food combos But wait! [player_name] is determined to bounce back, and [subject_pronoun]'ll bounce back in no time!"
+    "Oh no! [player_name]'s dreams of being a professional chef are ruined. [object_pronoun] skills aren't good enough so no one wants to try [possessive_pronoun] weird food combos But wait! [player_name] is determined to bounce back, and [subject_pronoun]'ll bounce back in no time!"
     "help train [object_pronoun]!"
     
     jump scene1
@@ -88,7 +88,7 @@ label minigame1:
     hide w happy 
     "Task: Roll the chicken onto the waffle!"
 
-if player_variant == "pierre":
+    if player_variant == "pierre":
         show p happy
     else:
         show e happy
@@ -98,16 +98,29 @@ if player_variant == "pierre":
         hide p happy
     else:
         hide e happy
+
+    show c game
+    #ts is where the mini game is 
+    screen click_counter_game
     jump scene1close
 
 label scene1close:
-    scene home kitchen
+    scene chicken and waffle love
+    w "Oh my! Are you ok?"
+    c "I... I... yes."
+    if player_variant == "pierre":
+        show p happy
+    else:
+        show e happy
+    "Couple Matched!"
     # add the cute ending scene here
-
+image ceo/ yn 
+pause 4 
+image waffle and chicken 
     jump firstmiddle
 
 label firstmiddle:
-    scene blank
+    scene chud confident cutscene
     "After completing the first mini-game, [player_name] feels more confident in [possessive_pronoun] cooking skills."
     "However, the journey to becoming a master chef is just beginning."
 
@@ -115,7 +128,8 @@ label firstmiddle:
 
 label scene2:
     scene restaurant kitchen
-
+menu:
+    "Let's not get carried away now"
     "[player_name] is in [possessive_pronoun] restaurant kitchen"
 
     if player_variant == "pierre":
